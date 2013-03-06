@@ -15,5 +15,8 @@
 *.exe
 *.out
 *.app
-
 serial
+
+# Others
+
+*.swp
