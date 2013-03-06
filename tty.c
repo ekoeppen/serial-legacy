@@ -211,6 +211,8 @@ void read_tty (char *c) {
     res = read (fd, c, 1);
     if ( (res == -1)  && (errno != EINTR) )  {
       perror ("read tty");
+      restore_tty ();
+      exit (1);
     }
   } while (res != 1);
 }
