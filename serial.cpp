@@ -65,24 +65,11 @@ void usage(char *progname)
     fprintf(stderr, "\n");
 }
 
-int main(int argc, char **argv)
+void readPresetStrings(void)
 {
-    int             speed;
-    int             duplex = 0, crnl = 0;
-    int             serial;
-    int		    tty_in, tty_out;
-    struct termios  options; 
-    struct termios  old_termios; 
-    unsigned int    baud;
+    FILE            *presetFile;
+    char            presetName[FILENAME_MAX];
     char            stringbuf[16384];
-    bool	    done = false;
-    fd_set	    reads;
-    struct timeval  timeout;
-
-    bool saw_tilde = false;
-
-    FILE *presetFile;
-    char presetName[512];
 
     for(int i = 0; i < 10; i++)
         presetStrings[i][0] = '\0';
@@ -118,6 +105,23 @@ int main(int argc, char **argv)
         fclose(presetFile);
     }
 
+}
+
+int main(int argc, char **argv)
+{
+    int             speed;
+    int             duplex = 0, crnl = 0;
+    int             serial;
+    int		    tty_in, tty_out;
+    struct termios  options; 
+    struct termios  old_termios; 
+    unsigned int    baud;
+    bool	    done = false;
+    fd_set	    reads;
+    struct timeval  timeout;
+
+    bool saw_tilde = false;
+
     if(argc < 3) {
         usage(argv[0]);
 	exit(EXIT_FAILURE);
@@ -127,6 +131,8 @@ int main(int argc, char **argv)
         usage(argv[0]);
 	exit(EXIT_FAILURE);
     }
+
+    readPresetStrings();
 
     baud = (unsigned int) atoi(argv[2]);
     int which;
