@@ -1,7 +1,11 @@
 CFLAGS = -O2
-SRCS = tty.c term.c
+SRCS = serial.cpp
+PROG = serial
 
 all: serial
 
-serial: $(SRCS)
+clean:
+	rm -f $(PROG)
+
+$(PROG): $(SRCS)
 	$(CC) $(CFLAGS) -o $@ $+
