@@ -33,9 +33,7 @@ unsigned baudMapping[][2] = {
     {38400  , B38400  },
     {57600  , B57600  },
     {115200  , B115200  },
-    // {128000  , B128000  },
     {230400  , B230400  },
-    // {256000  , B256000  },
 };
 int baudMappingCount = sizeof(baudMapping) / sizeof(baudMapping[0]);
 
@@ -171,15 +169,8 @@ int main(int argc, char **argv)
 	exit(EXIT_FAILURE);
     }
 
-#if 0
-    if(fcntl(serial, F_SETFL, 0) == -1) {
-	fprintf(stderr, "Failed to reset fcntl on serial\n");
-	exit(EXIT_FAILURE);
-    }
-#endif
-
     /*
-     * get the current options 
+     * get the current options of the input tty
      */
     tcgetattr(tty_in, &old_termios);
     tcgetattr(tty_in, &options);
@@ -222,7 +213,7 @@ int main(int argc, char **argv)
 
 
     /*
-     * get the current options 
+     * get the current options of the output tty
      */
     tcgetattr(serial, &options);
 
@@ -245,8 +236,6 @@ int main(int argc, char **argv)
 
     options.c_cflag &= ~CRTSCTS;
 
-    // options.c_iflag &= ~(IXON | IXOFF | IXANY); /* no flow control */
-
     options.c_oflag &= ~(IXON | IXOFF | IXANY);	/* no flow control */
 
     options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
@@ -262,7 +251,7 @@ int main(int argc, char **argv)
     /*
      * Linux seems to have problem with the following ??!! 
      */
-    options.c_cflag |= (IXON | IXOFF);	/* Software flow control */
+    options.c_oflag &= ~(IXON | IXOFF | IXANY);	/* no flow control */
     options.c_lflag = 0;	/* no local flags */
     options.c_cflag |= HUPCL;	/* Drop DTR on close */
 
@@ -385,14 +374,12 @@ int main(int argc, char **argv)
 
 			crnl = !crnl;
 
-#if 1
 			tcgetattr(serial, &options);
 			if(crnl)
 			    options.c_iflag |= ICRNL;
 			else
 			    options.c_iflag &= ~ICRNL;
 			tcsetattr(serial, TCSANOW, &options);
-#endif
 
 			tcgetattr(tty_out, &options);
 			if(crnl)
